@@ -15,7 +15,7 @@ ostream &operator<<(ostream &os, Net const &m) {
 ostream &operator<<(ostream &os, Node const &m) {
   os << m.id << " ->";
   for (int i = 0; i < m.neighbors.size(); i += 1) {
-    os << ' ' << m.neighbors[i].ptr->id;
+    os << ' ' << m.neighbors[i].nodePtr->id;
   }
   return os;
 }
