@@ -12,7 +12,7 @@ void Node::addNeighbor(Node* nPtr, Edge* ePtr) {
   neighbors.push_back(newNeighbor);
 }
 
-uint Node::Edge::getTotalWeight(uint signal) {
+uint Edge::getTotalWeight(uint signal) {
   if (signal % 2 == 0) {
     return signal * signal;
   } else {
@@ -20,7 +20,7 @@ uint Node::Edge::getTotalWeight(uint signal) {
   }
 }
 
-void Node::Edge::addSignal() {
+void Edge::addSignal() {
   signal += 1;
   weight = getTotalWeight(signal + 1) - getTotalWeight(signal);
 }
@@ -49,14 +49,14 @@ Graph::Graph(char* filepath) {
   }
 
   // set node neightbors
-  _edges = new Node::Edge[edgeNum];
+  _edges = new Edge[edgeNum];
   for (uint i = 0; i < edgeNum; i += 1) {
     getline(inFile, line);
     stringstream ss;
     ss << line;
     uint from, to;
     ss >> from >> to;
-    _edges[i].setNode(&_nodes[from], &_nodes[to]);
+    _edges[i].setNode(from, to);
     _nodes[from].addNeighbor(&_nodes[to], &_edges[i]);
     _nodes[to].addNeighbor(&_nodes[from], &_edges[i]);
   }
@@ -100,16 +100,16 @@ void Graph::resetNodesAccWeight() {
   }
 }
 
-void Node::setNeighborWeight(Edge* edges) {
+void Node::setNeighborWeight() {
   for (int i = 0; i < neighbors.size(); i += 1) {
     uint newWeight = accWeight + neighbors[i].edgePtr->weight;
     if (newWeight < neighbors[i].nodePtr->accWeight) {
       neighbors[i].nodePtr->accWeight = newWeight;
       neighbors[i].nodePtr->fromPtrs.clear();
       neighbors[i].nodePtr->fromPtrs.push_back(neighbors[i].edgePtr);
-      neighbors[i].nodePtr->setNeighborWeight(edges);
+      neighbors[i].nodePtr->setNeighborWeight();
     } else if (newWeight == neighbors[i].nodePtr->accWeight) {
-      vector<Node::Edge*>& newFromPtr = neighbors[i].nodePtr->fromPtrs;
+      vector<Edge*>& newFromPtr = neighbors[i].nodePtr->fromPtrs;
       if (find(newFromPtr.begin(), newFromPtr.end(), neighbors[i].edgePtr) == newFromPtr.end()) {
         newFromPtr.push_back(neighbors[i].edgePtr);
       }
@@ -117,19 +117,19 @@ void Node::setNeighborWeight(Edge* edges) {
   }
 }
 
-void Node::setComingNeighbor() {
+void Node::setComingNeighbor(Node* nodes) {
   for (int j = 0; j < fromPtrs.size(); j += 1) {
     Edge* setEdgePtr = fromPtrs[j];
     setEdgePtr->netSignal += 1;
-    setEdgePtr->getTo(this)->setComingNeighbor();
-    vector<Node::Edge*>& newToPtrs = setEdgePtr->getTo(this)->toPtrs;
+    nodes[setEdgePtr->getTo(id)].setComingNeighbor(nodes);
+    vector<Edge*>& newToPtrs = nodes[setEdgePtr->getTo(id)].toPtrs;
     if (find(newToPtrs.begin(), newToPtrs.end(), setEdgePtr) == newToPtrs.end()) {
       newToPtrs.push_back(setEdgePtr);
     }
   }
 }
 
-void Node::setGoingNeighbor() {
+void Node::setGoingNeighbor(Node* nodes) {
   uint accSignal = 0;
   for (int i = 0; i < fromPtrs.size(); i += 1) {
     if (fromPtrs[i]->netSignal > accSignal) {
@@ -141,14 +141,14 @@ void Node::setGoingNeighbor() {
   for (int j = 0; j < toPtrs.size(); j += 1) {
     Edge* setEdgePtr = toPtrs[j];
     setEdgePtr->netSignal = setEdgePtr->netSignal + accSignal;
-    setEdgePtr->getTo(this)->setGoingNeighbor();
+    nodes[setEdgePtr->getTo(id)].setGoingNeighbor(nodes);
   }
 }
 
-void Node::finalSet() {
+void Node::finalSet(Node* nodes) {
   if (fromPtrs.size() > 0) {
     fromPtrs[0]->set = true;
-    fromPtrs[0]->getTo(this)->finalSet();
+    nodes[fromPtrs[0]->getTo(id)].finalSet(nodes);
   }
 }
 
@@ -157,7 +157,7 @@ void Graph::traverse() {
     resetNodesAccWeight();
     Net& net = _nets[netIdx];
     net.source->accWeight = 0;
-    net.source->setNeighborWeight(_edges);
+    net.source->setNeighborWeight();
     // for (int i = 0; i < nodeNum; i += 1) {
     //   if (_nodes[i].fromPtrs.size() > 0) {
     //     cout << "node(" << i << ") \tfrom [ ";
@@ -172,7 +172,7 @@ void Graph::traverse() {
     // }
     // cout << "---" << endl;
     for (int i = 0; i < net.destinations.size(); i += 1) {
-      net.destinations[i]->setComingNeighbor();
+      net.destinations[i]->setComingNeighbor(_nodes);
     }
     // for (int i = 0; i < edgeNum; i += 1) {
     //   cout << "edge(" << i << ") \tnetSignal " << _edges[i].netSignal << endl;
@@ -184,12 +184,12 @@ void Graph::traverse() {
     //   }
     //   cout << ']' << endl;
     // }
-    net.source->setGoingNeighbor();
+    net.source->setGoingNeighbor(_nodes);
     // for (int i = 0; i < edgeNum; i += 1) {
     //   cout << "edge(" << i << ") \tnetSignal " << _edges[i].netSignal << endl;
     // }
     for (int i = 0; i < net.destinations.size(); i += 1) {
-      net.destinations[i]->finalSet();
+      net.destinations[i]->finalSet(_nodes);
     }
     for (int i = 0; i < edgeNum; i += 1) {
       if (_edges[i].set) {
