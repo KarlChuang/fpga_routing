@@ -69,6 +69,7 @@ Graph::Graph(char* filepath) {
     ss << line;
     uint from, to;
     ss >> from;
+    _nets[i].setId(i);
     _nets[i].setSource(&_nodes[from]);
     while (ss >> to) {
       _nets[i].addDestination(&_nodes[to]);
@@ -76,15 +77,15 @@ Graph::Graph(char* filepath) {
   }
 
   // set net Group
-  for (int i = 0; i < netGroupNum; i += 1) {
+  _netGroups = new NetGroup[netGroupNum];
+  for (uint i = 0; i < netGroupNum; i += 1) {
     getline(inFile, line);
     stringstream ss;
     ss << line;
     uint id;
     while (ss >> id) {
-      // cout << id << ' ';
+      _netGroups[i].nets.push_back(&_nets[id]);
     }
-    // cout << endl;
   }
 }
 

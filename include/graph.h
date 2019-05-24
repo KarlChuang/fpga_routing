@@ -45,10 +45,16 @@ public:
 class Net {
   friend ostream &operator<<(ostream &, Net const &);
 public:
+  uint id;
   Node* source;
   vector<Node*> destinations;
+  void setId(uint newId) { id = newId; }
   void setSource(Node* ptr) { source = ptr; }
   void addDestination(Node* ptr) { destinations.push_back(ptr); }
+};
+
+struct NetGroup {
+  vector<Net*> nets;
 };
 
 class Graph {
@@ -56,10 +62,12 @@ class Graph {
   Node* _nodes;
   Net* _nets;
   Edge* _edges;
+  NetGroup* _netGroups;
+
 public:
   uint nodeNum, edgeNum, netNum, netGroupNum;
   Graph(char* filepath);
-  ~Graph() { delete [] _nodes; delete [] _nets; delete [] _edges; }
+  ~Graph() { delete [] _nodes; delete [] _nets; delete [] _edges; delete [] _netGroups; }
   void resetNodesAccWeight();
   void traverse();
 };

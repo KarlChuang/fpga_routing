@@ -30,5 +30,12 @@ ostream &operator<<(ostream &os, Graph const &m) {
   for (int i = 0; i < m.netNum; i += 1) {
     os << m._nets[i] << endl;
   }
+  os << "net group:" << endl;
+  for (int i = 0; i < m.netGroupNum; i += 1) {
+    for (int j = 0; j < m._netGroups[i].nets.size(); j += 1) {
+      os << m._netGroups[i].nets[j]->id << ' ';
+    }
+    os << endl;
+  }
   return os;
 }
