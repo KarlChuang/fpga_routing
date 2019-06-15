@@ -9,9 +9,12 @@ class Edge {
 public:
   uint weight;
   uint signal;
+  vector<uint> groupSignal;
+  vector<uint> signalNets;
+
   Edge() : weight(2), signal(0), set(false), netSignal(0) {}
   void setNode(uint p1, uint p2) { nodeId1 = p1; nodeId2 = p2; }
-  void addSignal();
+  void addSignal(uint, uint);
   uint getTo(uint nodeId) { return (nodeId1 == nodeId) ? nodeId2 : nodeId1; }
   
   bool set;
@@ -46,15 +49,18 @@ class Net {
   friend ostream &operator<<(ostream &, Net const &);
 public:
   uint id;
+  uint groupId;
   Node* source;
   vector<Node*> destinations;
   void setId(uint newId) { id = newId; }
+  void setGroupId(uint newId) { groupId = newId; }
   void setSource(Node* ptr) { source = ptr; }
   void addDestination(Node* ptr) { destinations.push_back(ptr); }
 };
 
 struct NetGroup {
   vector<Net*> nets;
+  uint score;
 };
 
 class Graph {
@@ -69,7 +75,12 @@ public:
   Graph(char* filepath);
   ~Graph() { delete [] _nodes; delete [] _nets; delete [] _edges; delete [] _netGroups; }
   void resetNodesAccWeight();
-  void traverse();
+  void traverse(NetGroup* netGroups = NULL);
+
+  // deal with net group
+  void sillyOut();
+  void createILP();
+  void changeOrder();
 };
 
 ostream &operator<<(ostream &, Node const &);

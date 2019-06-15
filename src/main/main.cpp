@@ -7,7 +7,9 @@ int main(int argc, char** argv) {
   if (argc >= 2) {
     char* filepath = argv[1];
     Graph g = Graph(filepath);
-    cout << g << endl;
-    // g.traverse();
+    // cout << g << endl;
+    g.traverse();
+    // g.createILP();
+    g.sillyOut();
   }
 }
