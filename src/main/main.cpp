@@ -1,5 +1,6 @@
 #include <iostream>
 #include "graph.h"
+#include "ILP.h"
 
 using namespace std;
 
@@ -12,4 +13,5 @@ int main(int argc, char** argv) {
     // g.createILP();
     g.sillyOut();
   }
+  demo();
 }
