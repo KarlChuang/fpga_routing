@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -79,6 +80,7 @@ public:
 
   // deal with net group
   void sillyOut();
+  void writeFile(string, vector< vector<int> >&, vector< vector<int> >&);
   void createILP();
   void changeOrder();
 };

@@ -10,8 +10,8 @@ int main(int argc, char** argv) {
     Graph g = Graph(filepath);
     // cout << g << endl;
     g.traverse();
-    // g.createILP();
-    g.sillyOut();
+    g.createILP();
+    // g.sillyOut();
   }
-  demo();
+  // demo();
 }
