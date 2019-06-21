@@ -3,6 +3,7 @@
 #include <sstream>
 #include <math.h>
 #include <algorithm>
+#include <stdint.h>
 
 #include "graph.h"
 

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <cstring>
 #include <math.h>
+#include <stdint.h>
 
 #include "lp_lib.h"
 #include "graph.h"
