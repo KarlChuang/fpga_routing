@@ -2,7 +2,6 @@
 #include <sstream>
 #include <cstring>
 #include <math.h>
-#include <cstdint>
 
 #include "lp_lib.h"
 #include "graph.h"
@@ -11,7 +10,7 @@ void Graph::createILP() {
   vector< vector<int> > netEdgeId(netNum);
   vector< vector<int> > netColNum(netNum);
   vector< vector<int> > netEdgeWeight(netNum);
-  uint Ncol = nSignal + 1;
+  int Ncol = nSignal + 1;
   lprec *lp;
   int *colno = NULL, *colno2 = NULL, ret = 0;
   REAL *row = NULL, *row2 = NULL;
@@ -37,9 +36,9 @@ void Graph::createILP() {
 
   // set column variable
   int j = 1;
-  for (uint edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
+  for (int edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
     Edge& edg = _edges[edgeIdx];
-    for (uint edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
+    for (int edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
       netEdgeId[edg.signals[edgNetIdx].netId].push_back(edgeIdx);
       netColNum[edg.signals[edgNetIdx].netId].push_back(j);
 
@@ -84,10 +83,10 @@ void Graph::createILP() {
   if(ret == 0) {
     set_add_rowmode(lp, TRUE);
     j = 1;
-    for (uint edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
+    for (int edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
       Edge& edg = _edges[edgeIdx];
       float signalfloat = float(edg.signal);
-      for (uint edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
+      for (int edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
         // set edge constrain
         colno[edgNetIdx] = j;
         row[edgNetIdx] = 1;
@@ -101,12 +100,12 @@ void Graph::createILP() {
     }
     runTimeManage("Set edge constrain");
 
-    for (uint netGroupIdx = 0; netGroupIdx < netGroupNum; netGroupIdx += 1) {
+    for (int netGroupIdx = 0; netGroupIdx < netGroupNum; netGroupIdx += 1) {
       j = 0;
       int size = 0;
-      for (uint nId = 0; nId < _netGroups[netGroupIdx].nets.size(); nId += 1) {
+      for (int nId = 0; nId < _netGroups[netGroupIdx].nets.size(); nId += 1) {
         int netIdx = _netGroups[netGroupIdx].nets[nId]->id;
-        for (uint k = 0; k < netEdgeId[netIdx].size(); k += 1) {
+        for (int k = 0; k < netEdgeId[netIdx].size(); k += 1) {
           // set net group constrain        
           colno[j] = netColNum[netIdx][k];
           row[j] = 2;
@@ -162,13 +161,13 @@ void Graph::createILP() {
   if(ret == 0) {
     cout << "Objective value: " << int(get_objective(lp)) << endl;
     get_variables(lp, row);
-    for (uint nId = 0; nId < netNum; nId += 1) {
+    for (int nId = 0; nId < netNum; nId += 1) {
       for(j = 0; j < netColNum[nId].size(); j++) {
         int weight = round(row[netColNum[nId][j] - 1]) * 2;
         netEdgeWeight[nId].push_back(weight);
 
         // add weight to the Edge.signalWeights 
-        uint edgId = netEdgeId[nId][j];
+        int edgId = netEdgeId[nId][j];
         _edges[edgId].setWeight(nId, weight);
 
         // set NetGroup.score

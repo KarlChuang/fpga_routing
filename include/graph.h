@@ -1,7 +1,6 @@
 #include <vector>
 #include <string>
 #include <time.h>
-#include <cstdint>
 
 using namespace std;
 
@@ -11,33 +10,33 @@ extern clock_t TEMP_TIME;
 void runTimeManage(string errorMsg, bool finish=false);
 
 struct Signal {
-  uint edgeId;
-  uint netId;
-  uint weight;
+  int edgeId;
+  int netId;
+  int weight;
 };
 
 class Edge {
-  uint getTotalWeight(uint signal);
-  uint nodeId1;
-  uint nodeId2;
+  int getTotalWeight(int signal);
+  int nodeId1;
+  int nodeId2;
 public:
-  uint id;
-  uint weight;
-  uint signal;
-  // vector<uint> groupSignal;
-  // vector<uint> signalNets;
-  // vector<uint> signalWeights;
+  int id;
+  int weight;
+  int signal;
+  // vector<int> groupSignal;
+  // vector<int> signalNets;
+  // vector<int> signalWeights;
   vector<Signal> signals;
 
   Edge() : weight(2), signal(0), set(false), netSignal(0) {}
-  void setId(uint newId) { id = newId; }
-  void setNode(uint p1, uint p2) { nodeId1 = p1; nodeId2 = p2; }
-  void addSignal(uint netId, uint w);
-  void setWeight(uint, uint);
-  uint getTo(uint nodeId) { return (nodeId1 == nodeId) ? nodeId2 : nodeId1; }
+  void setId(int newId) { id = newId; }
+  void setNode(int p1, int p2) { nodeId1 = p1; nodeId2 = p2; }
+  void addSignal(int netId, int w);
+  void setWeight(int, int);
+  int getTo(int nodeId) { return (nodeId1 == nodeId) ? nodeId2 : nodeId1; }
   
   bool set;
-  uint netSignal;
+  int netSignal;
 };
 
 
@@ -49,13 +48,13 @@ class Node {
   };
 
 public:
-  uint id;
+  int id;
   vector<Neighbor> neighbors;
-  void setId(uint newId) { id = newId; }
+  void setId(int newId) { id = newId; }
   void addNeighbor(Node*, Edge*);
   
   // Method for graph.traverve()
-  uint accWeight;
+  int accWeight;
   vector<Edge*> fromPtrs;
   vector<Edge*> toPtrs;
   void setNeighborWeight();
@@ -67,20 +66,20 @@ public:
 class Net {
   friend ostream &operator<<(ostream &, Net const &);
 public:
-  uint id;
-  vector<uint> groupIds;
+  int id;
+  vector<int> groupIds;
   Node* source;
   vector<Node*> destinations;
-  void setId(uint newId) { id = newId; }
-  void addGroupId(uint newId) { groupIds.push_back(newId); }
+  void setId(int newId) { id = newId; }
+  void addGroupId(int newId) { groupIds.push_back(newId); }
   void setSource(Node* ptr) { source = ptr; }
   void addDestination(Node* ptr) { destinations.push_back(ptr); }
 };
 
 struct NetGroup {
-  uint id;
+  int id;
   vector<Net*> nets;
-  uint score;
+  int score;
 };
 
 class Graph {
@@ -92,7 +91,7 @@ class Graph {
   // bool isNetGroupBigger(NetGroup*, NetGroup*);
 
 public:
-  uint nodeNum, edgeNum, netNum, netGroupNum;
+  int nodeNum, edgeNum, netNum, netGroupNum;
   int nSignal;
   Graph(char* filepath);
   ~Graph() { delete [] _nodes; delete [] _nets; delete [] _edges; delete [] _netGroups; }

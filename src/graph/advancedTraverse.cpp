@@ -3,7 +3,6 @@
 #include <sstream>
 #include <math.h>
 #include <algorithm>
-#include <cstdint>
 
 #include "graph.h"
 
@@ -12,9 +11,9 @@ using namespace std;
 void Graph::writeFile(string filename, vector< vector<int> >& netEdgeId, vector< vector<int> >& netEdgeWeight) {
   fstream file;
   file.open(filename, ios::out | ios::trunc);
-  for (uint netIdx = 0; netIdx < netEdgeId.size(); netIdx += 1) {
+  for (int netIdx = 0; netIdx < netEdgeId.size(); netIdx += 1) {
     file << netEdgeId[netIdx].size() << endl;
-    for (uint netEdgeIdx = 0; netEdgeIdx < netEdgeId[netIdx].size(); netEdgeIdx += 1) {
+    for (int netEdgeIdx = 0; netEdgeIdx < netEdgeId[netIdx].size(); netEdgeIdx += 1) {
       file << netEdgeId[netIdx][netEdgeIdx] << ' ';
       file << netEdgeWeight[netIdx][netEdgeIdx] << endl;
     }
@@ -37,7 +36,7 @@ void Graph::writeFile(string filename) {
 void Graph::readOutputFile(string filename) {
   fstream file;
   string line;
-  uint nSignal, edgId, edgWeight;
+  int nSignal, edgId, edgWeight;
 
   file.open(filename);
   if (!file) {
@@ -45,7 +44,7 @@ void Graph::readOutputFile(string filename) {
     exit(1);
   }
 
-  for (uint netIdx = 0; netIdx < netNum; netIdx += 1) {
+  for (int netIdx = 0; netIdx < netNum; netIdx += 1) {
     // clear net vector 
     getline(file, line);
     stringstream ss;
@@ -82,13 +81,13 @@ void Graph::adaptILP() {
     double constrainScore = 0;
     signalSort.resize(_edges[i].signals.size());
     for (int j = 0; j < _edges[i].signals.size(); j += 1) {
-      uint signalNetId = _edges[i].signals[j].netId;
+      int signalNetId = _edges[i].signals[j].netId;
       int signalWeight = _edges[i].signals[j].weight;
       Net& net = _nets[signalNetId];
       int scoreMax = 0;
       for (int k = 0; k < net.groupIds.size(); k += 1) {
-        uint signalGroupId = net.groupIds[k];
-        uint signalGroupScore = _netGroups[signalGroupId].score;
+        int signalGroupId = net.groupIds[k];
+        int signalGroupScore = _netGroups[signalGroupId].score;
         if (signalGroupScore > scoreMax)
           scoreMax = signalGroupScore;
       }
@@ -106,7 +105,7 @@ void Graph::adaptILP() {
     while (constrainScore > 1.0) {
       int changedSignalIdx = signalSort[0].signal;
       int originWeight = _edges[i].signals[changedSignalIdx].weight;
-      uint signalNetId = _edges[i].signals[changedSignalIdx].netId;
+      int signalNetId = _edges[i].signals[changedSignalIdx].netId;
       // update constain
       constrainScore -= 1 / double(originWeight);
       constrainScore += 1 / double(originWeight + 2);
@@ -118,7 +117,7 @@ void Graph::adaptILP() {
       // update net group score
       Net& net = _nets[signalNetId];
       for (int k = 0; k < net.groupIds.size(); k += 1) {
-        uint signalGroupId = net.groupIds[k];
+        int signalGroupId = net.groupIds[k];
         _netGroups[signalGroupId].score += 2;
       }
       // sort signalSort if the first element weight is not smallest
@@ -140,9 +139,9 @@ void Graph::adaptILP() {
 void Graph::sillyOut() {
   vector< vector<int> > netEdgeId(netNum);
   vector< vector<int> > netEdgeWeight(netNum);
-  for (uint edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
+  for (int edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
     Edge& edg = _edges[edgeIdx];
-    for (uint edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
+    for (int edgNetIdx = 0; edgNetIdx < edg.signals.size(); edgNetIdx += 1) {
       int weight = edg.signal;
       if (edg.signal % 2 == 1) {
         if (edgNetIdx < edg.signal / 2) {
