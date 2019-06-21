@@ -1,21 +1,38 @@
 #include <vector>
 #include <string>
+#include <time.h>
 
 using namespace std;
+
+extern clock_t START_TIME;
+extern clock_t TEMP_TIME;
+
+void runTimeManage(string errorMsg, bool finish=false);
+
+struct Signal {
+  uint edgeId;
+  uint netId;
+  uint weight;
+};
 
 class Edge {
   uint getTotalWeight(uint signal);
   uint nodeId1;
   uint nodeId2;
 public:
+  uint id;
   uint weight;
   uint signal;
-  vector<uint> groupSignal;
-  vector<uint> signalNets;
+  // vector<uint> groupSignal;
+  // vector<uint> signalNets;
+  // vector<uint> signalWeights;
+  vector<Signal> signals;
 
   Edge() : weight(2), signal(0), set(false), netSignal(0) {}
+  void setId(uint newId) { id = newId; }
   void setNode(uint p1, uint p2) { nodeId1 = p1; nodeId2 = p2; }
-  void addSignal(uint, uint);
+  void addSignal(uint netId, uint w);
+  void setWeight(uint, uint);
   uint getTo(uint nodeId) { return (nodeId1 == nodeId) ? nodeId2 : nodeId1; }
   
   bool set;
@@ -50,16 +67,17 @@ class Net {
   friend ostream &operator<<(ostream &, Net const &);
 public:
   uint id;
-  uint groupId;
+  vector<uint> groupIds;
   Node* source;
   vector<Node*> destinations;
   void setId(uint newId) { id = newId; }
-  void setGroupId(uint newId) { groupId = newId; }
+  void addGroupId(uint newId) { groupIds.push_back(newId); }
   void setSource(Node* ptr) { source = ptr; }
   void addDestination(Node* ptr) { destinations.push_back(ptr); }
 };
 
 struct NetGroup {
+  uint id;
   vector<Net*> nets;
   uint score;
 };
@@ -70,9 +88,11 @@ class Graph {
   Net* _nets;
   Edge* _edges;
   NetGroup* _netGroups;
+  // bool isNetGroupBigger(NetGroup*, NetGroup*);
 
 public:
   uint nodeNum, edgeNum, netNum, netGroupNum;
+  int nSignal;
   Graph(char* filepath);
   ~Graph() { delete [] _nodes; delete [] _nets; delete [] _edges; delete [] _netGroups; }
   void resetNodesAccWeight();
@@ -81,7 +101,10 @@ public:
   // deal with net group
   void sillyOut();
   void writeFile(string, vector< vector<int> >&, vector< vector<int> >&);
+  void writeFile(string);
+  void readOutputFile(string);
   void createILP();
+  void adaptILP();
   void changeOrder();
 };
 

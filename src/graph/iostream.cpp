@@ -5,8 +5,10 @@
 using namespace std;
 
 ostream &operator<<(ostream &os, Net const &m) {
-  os << "(Group " << m.groupId << ") ";
-  os << m.source->id << " ->";
+  os << "(Group";
+  for (int i = 0; i < m.groupIds.size(); i += 1)
+    os << ' ' << m.groupIds[i];
+  os << ") "<< m.source->id << " ->";
   for (int i = 0; i < m.destinations.size(); i += 1) {
     os << ' ' << m.destinations[i]->id;
   }

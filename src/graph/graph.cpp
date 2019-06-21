@@ -20,11 +20,24 @@ uint Edge::getTotalWeight(uint signal) {
   }
 }
 
-void Edge::addSignal(uint netId, uint groupId) {
+void Edge::addSignal(uint netId, uint w = 0) {
   signal += 1;
-  groupSignal[groupId] += 1;
-  signalNets.push_back(netId);
+  Signal sig = {id, netId, w};
+  signals.push_back(sig);
   weight = getTotalWeight(signal + 1) - getTotalWeight(signal);
+}
+
+void Edge::setWeight(uint netId, uint newWeight) {
+
+
+  for (uint i = 0; i < signals.size(); i += 1) {
+    if (signals[i].netId == netId) {
+      signals[i].weight = newWeight;
+      return;
+    }
+  }
+  cout << "Error: Not find the netId " << netId << " in Edge " << id << endl;
+  exit(1);
 }
 
 Graph::Graph(char* filepath) {
@@ -36,11 +49,12 @@ Graph::Graph(char* filepath) {
   }
   string line, temp;
 
-  // set nodeNum, edgeNum, netNum, netGroupNum
+  // set nodeNum, edgeNum, netNum, netGroupNum, nSignal
   getline(inFile, line);
   stringstream ss;
   ss << line;
   ss >> nodeNum >> edgeNum >> netNum >> netGroupNum;
+  nSignal = 0;
 
   // set _nodes
   _nodes = new Node[nodeNum];
@@ -53,8 +67,7 @@ Graph::Graph(char* filepath) {
   // set node neightbors
   _edges = new Edge[edgeNum];
   for (uint i = 0; i < edgeNum; i += 1) {
-    vector<uint> vect(netGroupNum, 0);
-    _edges[i].groupSignal = vect;
+    _edges[i].setId(i);
     getline(inFile, line);
     stringstream ss;
     ss << line;
@@ -89,8 +102,9 @@ Graph::Graph(char* filepath) {
     uint id;
     while (ss >> id) {
       _netGroups[i].nets.push_back(&_nets[id]);
-      _nets[id].setGroupId(i);
+      _nets[id].addGroupId(i);
     }
+    _netGroups[i].id = i;
     _netGroups[i].score = 0;
   }
 }
@@ -144,7 +158,6 @@ void Node::setGoingNeighbor(Node* nodes) {
       accSignal = fromPtrs[i]->netSignal;
     }
   }
-  // cout << id << " " << accSignal << endl;
   for (int j = 0; j < toPtrs.size(); j += 1) {
     Edge* setEdgePtr = toPtrs[j];
     setEdgePtr->netSignal = setEdgePtr->netSignal + accSignal;
@@ -163,59 +176,27 @@ void Graph::traverse(NetGroup* netGroups) {
   if (netGroups == NULL) {
     netGroups = _netGroups;
   }
-  for (int groupIdx = 0; groupIdx < netGroupNum; groupIdx += 1) {
-    NetGroup& netGroup = netGroups[groupIdx];
-    for (int j = 0; j < netGroup.nets.size(); j += 1) {
-      resetNodesAccWeight();
-      Net* netPtr = netGroup.nets[j];
-      netPtr->source->accWeight = 0;
-      netPtr->source->setNeighborWeight();
-      // for (int i = 0; i < nodeNum; i += 1) {
-      //   if (_nodes[i].fromPtrs.size() > 0) {
-      //     cout << "node(" << i << ") \tfrom [ ";
-      //     for (int j = 0; j < _nodes[i].fromPtrs.size(); j += 1) {
-      //       cout << _nodes[i].fromPtrs[j]->getTo(&_nodes[i])->id << ' ';
-      //     }
-      //     cout << "] \taccumulated weight ";
-      //     cout << _nodes[i].accWeight << endl;
-      //   } else {
-      //     cout << "node(" << i << ") \tSOURCE" << " \t\taccumulated weight " << _nodes[i].accWeight << endl;
-      //   }
-      // }
-      // cout << "---" << endl;
-      for (int i = 0; i < netPtr->destinations.size(); i += 1) {
-        netPtr->destinations[i]->setComingNeighbor(_nodes);
+  for (int j = 0; j < netNum; j += 1) {
+    resetNodesAccWeight();
+    Net* netPtr = &_nets[j];
+    netPtr->source->accWeight = 0;
+    netPtr->source->setNeighborWeight();
+
+    for (int i = 0; i < netPtr->destinations.size(); i += 1) {
+      netPtr->destinations[i]->setComingNeighbor(_nodes);
+    }
+
+    netPtr->source->setGoingNeighbor(_nodes);
+
+    for (int i = 0; i < netPtr->destinations.size(); i += 1) {
+      netPtr->destinations[i]->finalSet(_nodes);
+    }
+
+    for (int i = 0; i < edgeNum; i += 1) {
+      if (_edges[i].set) {
+        _edges[i].addSignal(netPtr->id);
+        nSignal += 1;
       }
-      // for (int i = 0; i < edgeNum; i += 1) {
-      //   cout << "edge(" << i << ") \tnetSignal " << _edges[i].netSignal << endl;
-      // }
-      // for (int i = 0; i < nodeNum; i += 1) {
-      //   cout << "node(" << i << ") to [";
-      //   for (int j = 0; j < _nodes[i].toPtrs.size(); j += 1) {
-      //     cout << _nodes[i].toPtrs[j]->getTo(&_nodes[i])->id << ' ';
-      //   }
-      //   cout << ']' << endl;
-      // }
-      netPtr->source->setGoingNeighbor(_nodes);
-      // for (int i = 0; i < edgeNum; i += 1) {
-      //   cout << "edge(" << i << ") \tnetSignal " << _edges[i].netSignal << endl;
-      // }
-      for (int i = 0; i < netPtr->destinations.size(); i += 1) {
-        netPtr->destinations[i]->finalSet(_nodes);
-      }
-      for (int i = 0; i < edgeNum; i += 1) {
-        if (_edges[i].set) {
-          _edges[i].addSignal(netPtr->id, groupIdx);
-        }
-      }
-      // for (int i = 0; i < edgeNum; i += 1) {
-      //   cout << "edge(" << i << ") \tset " << _edges[i].set << " \t\tsignal " << _edges[i].signal << " \tweight " << _edges[i].weight; // << endl;
-      //   cout << " \tnet";
-      //   for (int k = 0; k < _edges[i].signalNets.size(); k += 1)
-      //     cout << " " << _edges[i].signalNets[k];
-      //   cout << endl;
-      // }
-      // cout << "--" << endl;
     }
   }
 }
