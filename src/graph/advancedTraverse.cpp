@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void Graph::writeFile(string filename, vector< vector<int> >& netEdgeId, vector< vector<int> >& netEdgeWeight) {
+void Graph::writeFile(char* filename, vector< vector<int> >& netEdgeId, vector< vector<int> >& netEdgeWeight) {
   fstream file;
   file.open(filename, ios::out | ios::trunc);
   for (int netIdx = 0; netIdx < netEdgeId.size(); netIdx += 1) {
@@ -20,7 +20,7 @@ void Graph::writeFile(string filename, vector< vector<int> >& netEdgeId, vector<
   }
 }
 
-void Graph::writeFile(string filename) {
+void Graph::writeFile(char* filename) {
   vector< vector<int> > netEdgeId(netNum);
   vector< vector<int> > netEdgeWeight(netNum);
   for (int edgeIdx = 0; edgeIdx < edgeNum; edgeIdx += 1) {
@@ -33,7 +33,7 @@ void Graph::writeFile(string filename) {
   writeFile(filename, netEdgeId, netEdgeWeight);
 }
 
-void Graph::readOutputFile(string filename) {
+void Graph::readOutputFile(char* filename) {
   fstream file;
   string line;
   int nSignal, edgId, edgWeight;

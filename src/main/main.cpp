@@ -8,7 +8,6 @@ using namespace std;
 clock_t START_TIME;
 clock_t TEMP_TIME;
 
-
 void runTimeManage(string errorMsg, bool finish) {
   float t = ((float)(clock() - TEMP_TIME)) / CLOCKS_PER_SEC;
   if (finish)

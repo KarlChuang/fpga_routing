@@ -2,10 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 #include "graph.h"
 
 using namespace std;
+
+#define INT_MAX 294967295
 
 void Node::addNeighbor(Node* nPtr, Edge* ePtr) {
   Node::Neighbor newNeighbor = { nPtr, ePtr };
@@ -37,7 +40,7 @@ void Edge::setWeight(int netId, int newWeight) {
     }
   }
   cout << "Error: Not find the netId " << netId << " in Edge " << id << endl;
-  exit(1);
+  // exit(1);
 }
 
 Graph::Graph(char* filepath) {
@@ -45,7 +48,7 @@ Graph::Graph(char* filepath) {
   inFile.open(filepath);
   if (!inFile) {
     cerr << "Unable to open file " << filepath << endl;
-    exit(1);
+    // exit(1);
   }
   string line, temp;
 
@@ -55,7 +58,7 @@ Graph::Graph(char* filepath) {
   ss << line;
   ss >> nodeNum >> edgeNum >> netNum >> netGroupNum;
   nSignal = 0;
-
+  
   // set _nodes
   _nodes = new Node[nodeNum];
 
@@ -131,7 +134,17 @@ void Node::setNeighborWeight() {
       neighbors[i].nodePtr->setNeighborWeight();
     } else if (newWeight == neighbors[i].nodePtr->accWeight) {
       vector<Edge*>& newFromPtr = neighbors[i].nodePtr->fromPtrs;
+
+      // bool find = false;
+      // for (int i = 0; i < newFromPtr.size(); i += 1) {
+      //   if (newFromPtr[i] == neighbors[i].edgePtr) {
+      //     find = true;
+      //     break;
+      //   }
+      // }
       if (find(newFromPtr.begin(), newFromPtr.end(), neighbors[i].edgePtr) == newFromPtr.end()) {
+      // if (!find) {
+        // cout << "not find set neighbor weight" << endl;
         newFromPtr.push_back(neighbors[i].edgePtr);
       }
     }
@@ -144,7 +157,17 @@ void Node::setComingNeighbor(Node* nodes) {
     setEdgePtr->netSignal += 1;
     nodes[setEdgePtr->getTo(id)].setComingNeighbor(nodes);
     vector<Edge*>& newToPtrs = nodes[setEdgePtr->getTo(id)].toPtrs;
+
+    // bool find = false;
+    // for (int i = 0; i < newToPtrs.size(); i += 1) {
+    //   if (newToPtrs[i] == setEdgePtr) {
+    //     find = true;
+    //     break;
+    //   }
+    // }
     if (find(newToPtrs.begin(), newToPtrs.end(), setEdgePtr) == newToPtrs.end()) {
+    // if (!find) {
+      // cout << "Not find" << endl;
       newToPtrs.push_back(setEdgePtr);
     }
   }
@@ -179,6 +202,7 @@ void Graph::traverse(NetGroup* netGroups) {
   for (int j = 0; j < netNum; j += 1) {
     resetNodesAccWeight();
     Net* netPtr = &_nets[j];
+
     netPtr->source->accWeight = 0;
     netPtr->source->setNeighborWeight();
 
@@ -198,5 +222,14 @@ void Graph::traverse(NetGroup* netGroups) {
         nSignal += 1;
       }
     }
+
+    // for (int i = 0; i < edgeNum; i += 1) {
+    //   cout << "edge(" << i << ") \tset " << _edges[i].set << " \t\tsignal " << _edges[i].signal << " \tweight " << _edges[i].weight; // << endl;
+    //   cout << " \tnet";
+    //   for (int k = 0; k < _edges[i].signals.size(); k += 1)
+    //     cout << " " << _edges[i].signals[k].netId;
+    //   cout << endl;
+    // }
+    // cout << "--" << endl;
   }
 }

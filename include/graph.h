@@ -100,9 +100,9 @@ public:
 
   // deal with net group
   void sillyOut();
-  void writeFile(string, vector< vector<int> >&, vector< vector<int> >&);
-  void writeFile(string);
-  void readOutputFile(string);
+  void writeFile(char*, vector< vector<int> >&, vector< vector<int> >&);
+  void writeFile(char*);
+  void readOutputFile(char*);
   void createILP();
   void adaptILP();
   void changeOrder();

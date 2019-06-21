@@ -1,6 +1,6 @@
 math=-lm
 def=
-opts=-g -Wall -DTA_KB_SETTING
+opts=-g -Wall -std=c++98 -DTA_KB_SETTING
 
 def=
 ifeq ("$(PLATFORM)","SCO_UNIX")
@@ -41,5 +41,7 @@ clean:
 
 clean_all:
 	@rm -rf ./src/**/*o
-	@rm -rf ./**/**/*o
 	@rm -rf ./**/*o
+	@rm -rf ./**/**/*o
+	@rm -rf ./**/**/**/*o
+	@rm -rf ./**/**/**/**/*o
