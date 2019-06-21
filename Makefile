@@ -1,6 +1,6 @@
 math=-lm
 def=
-opts=-g -Wall -std=c++11 -DTA_KB_SETTING
+opts=-g -Wall -DTA_KB_SETTING
 
 def=
 ifeq ("$(PLATFORM)","SCO_UNIX")
@@ -38,3 +38,8 @@ src/ILP/demo.o: src/ILP/demo.cpp include/ILP.h
 
 clean:
 	@rm -rf ./src/**/*o
+
+clean_all:
+	@rm -rf ./src/**/*o
+	@rm -rf ./**/**/*o
+	@rm -rf ./**/*o
