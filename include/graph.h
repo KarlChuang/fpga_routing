@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 #include <time.h>
-#include <stdint.h>
+#include <cstdint>
 
 using namespace std;
 

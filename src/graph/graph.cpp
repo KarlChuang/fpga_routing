@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <stdint.h>
+#include <cstdint>
 
 #include "graph.h"
 
