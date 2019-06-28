@@ -99,11 +99,11 @@ public:
   void traverse(NetGroup* netGroups = NULL);
 
   // deal with net group
-  void sillyOut();
+  void sillyOut(char*);
   void writeFile(char*, vector< vector<int> >&, vector< vector<int> >&);
   void writeFile(char*);
   void readOutputFile(char*);
-  void createILP();
+  void solveILP(float, int, bool, bool);
   void adaptILP();
   void changeOrder();
 };

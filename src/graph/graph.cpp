@@ -135,16 +135,7 @@ void Node::setNeighborWeight() {
     } else if (newWeight == neighbors[i].nodePtr->accWeight) {
       vector<Edge*>& newFromPtr = neighbors[i].nodePtr->fromPtrs;
 
-      // bool find = false;
-      // for (int i = 0; i < newFromPtr.size(); i += 1) {
-      //   if (newFromPtr[i] == neighbors[i].edgePtr) {
-      //     find = true;
-      //     break;
-      //   }
-      // }
       if (find(newFromPtr.begin(), newFromPtr.end(), neighbors[i].edgePtr) == newFromPtr.end()) {
-      // if (!find) {
-        // cout << "not find set neighbor weight" << endl;
         newFromPtr.push_back(neighbors[i].edgePtr);
       }
     }
@@ -158,16 +149,7 @@ void Node::setComingNeighbor(Node* nodes) {
     nodes[setEdgePtr->getTo(id)].setComingNeighbor(nodes);
     vector<Edge*>& newToPtrs = nodes[setEdgePtr->getTo(id)].toPtrs;
 
-    // bool find = false;
-    // for (int i = 0; i < newToPtrs.size(); i += 1) {
-    //   if (newToPtrs[i] == setEdgePtr) {
-    //     find = true;
-    //     break;
-    //   }
-    // }
     if (find(newToPtrs.begin(), newToPtrs.end(), setEdgePtr) == newToPtrs.end()) {
-    // if (!find) {
-      // cout << "Not find" << endl;
       newToPtrs.push_back(setEdgePtr);
     }
   }

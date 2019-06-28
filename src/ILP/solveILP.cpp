@@ -6,7 +6,7 @@
 #include "lp_lib.h"
 #include "graph.h"
 
-void Graph::createILP() {
+void Graph::solveILP(float acc_range, int timeout, bool setInt, bool outputResult) {
   vector< vector<int> > netEdgeId(netNum);
   vector< vector<int> > netColNum(netNum);
   vector< vector<int> > netEdgeWeight(netNum);
@@ -63,16 +63,18 @@ void Graph::createILP() {
       set_col_name(lp, j, cstr);
 
       // set vcolumn to integer and > 0
-      set_int(lp, j, TRUE);
-      int acc_range = 2;
-      set_bounds(lp, j, ((weight - acc_range - 1) < 0.5 ? 0.5 : weight - acc_range), weight + acc_range);
+      if (setInt)
+        set_int(lp, j, TRUE);
+      // int acc_range = 30;
+      set_bounds(lp, j, (((weight - weight * acc_range) < 0.5) ? 0.5 : weight - weight * acc_range), weight + weight * acc_range);
       // set_bounds(lp, j, 0.5, weight + acc_range);
       j += 1;
     }
   }
   colno[j] = get_infinite(lp);
   set_col_name(lp, j, "t");
-  set_int(lp, j, TRUE);
+  if (setInt)
+    set_int(lp, j, TRUE);
   if (!set_basis(lp, colno, FALSE)) {
     ret = 1;
     cout << "Error: cannot set basis" << endl;
@@ -140,7 +142,7 @@ void Graph::createILP() {
     set_minim(lp);
     // write_LP(lp, stdout);
     set_verbose(lp, IMPORTANT);
-    set_timeout(lp, 10); // timeout 1 min
+    set_timeout(lp, timeout); // timeout 1 min
 
     runTimeManage("Set min, verbose and timeout");
 
@@ -184,9 +186,9 @@ void Graph::createILP() {
   if(colno2 != NULL) free(colno2);
   if(lp != NULL) delete_lp(lp);
 
-  // if (ret == 0) {
-  //   writeFile("output/sampleOutput.txt", netEdgeId, netEdgeWeight);
-  // }
+  if (ret == 0 && outputResult) {
+    writeFile("output/output_lp_solve.txt", netEdgeId, netEdgeWeight);
+  }
 
   // cout << "---" << endl;
   // for (int i = 0; i < edgeNum; i += 1) {

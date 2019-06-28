@@ -1,5 +1,7 @@
 #include <iostream>
 #include <iomanip>
+#include <cstring>
+
 #include "graph.h"
 #include "ILP.h"
 
@@ -28,8 +30,10 @@ void runTimeManage(string errorMsg, bool finish) {
 int main(int argc, char** argv) {
   START_TIME = clock();
   TEMP_TIME = clock();
-  if (argc >= 2) {
+  if (argc >= 4) {
     char* filepath = argv[1];
+    char* outputfile = argv[2];
+    char* mode = argv[3];
     Graph g = Graph(filepath);
     // cout << g << endl;
     runTimeManage("Create graph");
@@ -37,18 +41,23 @@ int main(int argc, char** argv) {
     g.traverse();
     runTimeManage("Traverse graph");
 
-    g.createILP();
+    if (strcmp(mode, "ilp") == 0) {
+      float acc_range = 0.11;
+      int timeout = 3600;
+      bool setInt = false;
+      bool outputResult = false;
+      g.solveILP(acc_range, timeout, setInt, outputResult);
+      runTimeManage("Solve ILP finished");
 
-    // g.sillyOut();
-    // runTimeManage("Silly output");
-
-    // g.readOutputFile("output/synopsys01-1_ilp.txt");
-    // g.readOutputFile("output/sampleOutput.txt");
-    g.adaptILP();
-    // runTimeManage("Adapt ILP result");
-    g.writeFile("output/sampleOutputAdp.txt");
-
+      g.adaptILP();
+      runTimeManage("Adapt ILP result");
+      g.writeFile(outputfile);
+    } else if (strcmp(mode, "greedy") == 0) {
+      g.sillyOut(outputfile);
+      runTimeManage("Silly output");
+    }
     runTimeManage("total time", true);
+  } else {
+    cout << "Please run `./bin/main ${input file} ${output file} ${mode}`" << endl;
   }
-  // demo();
 }
