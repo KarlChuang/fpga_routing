@@ -1,5 +1,25 @@
 # FPGA routing
 
+## Quick start
+
+1. Binary file location
+
+`/project/cad/cad12/alpha_test/cadb0054/cadb0054`
+or
+`/project/cad/cad12/cadb0054/Desktop/fpga_routing/bin/main`
+
+2. How to build the binary file from project
+
+Go to the code repository `cd /project/cad/cad12/cadb0054/Desktop/fpga_routing`
+See in `## Compiling code`
+
+3. create output file
+
+`/project/cad/cad12/alpha_test/cadb0054/cadb0054 {inputfile} {outputfile} {mode}`
+mode = `greedy` or `ilp`
+
+See in `## Run the code`
+
 ## Introduction
 
 Our project is developed for solving the CAD contest 2019 problem B.
@@ -9,6 +29,7 @@ Our project is developed for solving the CAD contest 2019 problem B.
 We use C++98 to compile the code. We use lp_solve module, which in writen in C, so there are some problems to use other version of C++ compiler. We write a Makefile, so you can just run `make` to comile it
 
 If you successfully compile it, the binary file is `./fpga_routing/bin/main`.
+Please compile the code in `MacOS`, `CAD contest TSRI machine` or `ubuntu 16.04`
 
 ## Run the code
 
@@ -21,8 +42,6 @@ For example
 `./fpga_routing/bin/main ./fpga_routing/test_cases/synopsys01-1.txt ./fpga_routing/output/synopsys01-1_greedy.txt greedy`
 
 We have `greedy` and `ilp` two modes.
-
-However, the compiling on `MacOS` and `CAD contest TSRI machine` is sccessful, but the compiling on `ubuntu 16.04` is not successful yet.
 
 ## Evaluate the output
 
