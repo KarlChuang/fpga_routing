@@ -31,8 +31,6 @@ void Edge::addSignal(int netId, int w = 0) {
 }
 
 void Edge::setWeight(int netId, int newWeight) {
-
-
   for (int i = 0; i < signals.size(); i += 1) {
     if (signals[i].netId == netId) {
       signals[i].weight = newWeight;

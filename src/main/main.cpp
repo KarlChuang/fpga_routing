@@ -55,6 +55,9 @@ int main(int argc, char** argv) {
     } else if (strcmp(mode, "greedy") == 0) {
       g.sillyOut(outputfile);
       runTimeManage("Silly output");
+    } else if (strcmp(mode, "convex") == 0) {
+      g.solveConvex(1.0);
+      runTimeManage("Convex optimization");
     }
     runTimeManage("total time", true);
   } else {

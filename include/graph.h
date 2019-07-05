@@ -39,7 +39,6 @@ public:
   int netSignal;
 };
 
-
 class Node {
   friend ostream &operator<<(ostream &, Node const &);
   struct Neighbor {
@@ -98,7 +97,7 @@ public:
   void resetNodesAccWeight();
   void traverse(NetGroup* netGroups = NULL);
 
-  // deal with net group
+  // deal with net group by ILP
   void sillyOut(char*);
   void writeFile(char*, vector< vector<int> >&, vector< vector<int> >&);
   void writeFile(char*);
@@ -106,6 +105,9 @@ public:
   void solveILP(float, int, bool, bool);
   void adaptILP();
   void changeOrder();
+
+  // deal with net group by convex optimization
+  void solveConvex(double);
 };
 
 ostream &operator<<(ostream &, Node const &);
