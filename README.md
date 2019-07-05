@@ -1,5 +1,9 @@
 1. Binary file location
 
+/project/cad/cad12/alpha_test/cadb0054/cadb0054
+
+or
+
 /project/cad/cad12/cadb0054/Desktop/fpga_routing-master/bin/main
 
 2. How to build the binary file from project
@@ -9,8 +13,6 @@ make
 
 3. create output file
 
-/project/cad/cad12/cadb0054/Desktop/fpga_routing-master/bin/main {inputfile}
+/project/cad/cad12/alpha_test/cadb0054/cadb0054 {inputfile} {outputfile} {mode}
 
-4. the outfile location
-
-/project/cad/cad12/cadb0054/Desktop/fpga_routing-master/output/sampleOutput.txt
+mode = 'greedy' or 'ilp'
