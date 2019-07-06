@@ -2440,7 +2440,8 @@ lprec *read_lp1(lprec *lp, void *userhandle, read_modeldata_func read_modeldata,
     lp_yyset_out(NULL, pp.scanner);
     pv->lp_input = read_modeldata;
     pv->userhandle = userhandle;
-    lp1 = yacc_read(lp, verbose, lp_name, parse, &pp, lp_yy_delete_allocated_memory);
+    // lp1 = yacc_read(lp, verbose, lp_name, parse, &pp, lp_yy_delete_allocated_memory);
+    lp1 = yacc_read(lp, verbose, "bison", parse, &pp, lp_yy_delete_allocated_memory);
     FREE(pv);
   }
   return(lp1);
