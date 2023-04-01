@@ -1,5 +1,10 @@
 # FPGA routing
 
+此專案是解 2019 CAD Contest problem B
+『System-level FPGA Routing with Timing Division Multiplexing Technique』
+期望能設計一個演算法解此 NP-hard 的最佳化問題，
+期望找出比較好的 FPGA routing 演算法以達到資源的最有效率利用。
+
 ## Quick start
 
 1. Binary file location
